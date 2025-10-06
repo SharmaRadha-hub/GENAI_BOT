@@ -1,11 +1,6 @@
 # 🤖 RAG Knowledge Base Chatbot
 
-A production-ready **Retrieval-Augmented Generation (RAG)** chatbot that enables intelligent question-answering over your custom knowledge base. This project addresses the key limitation of Large Language Models: not knowing about specific, private, or recent data.
-
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![LangChain](https://img.shields.io/badge/LangChain-Latest-green.svg)
-![Streamlit](https://img.shields.io/badge/Streamlit-Latest-red.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+Retrieval-Augmented Generation (RAG) chatbot that enables intelligent question-answering over your custom knowledge base. This project addresses the key limitation of Large Language Models: not knowing about specific, private, or recent data.
 
 ## 🌟 Features
 
