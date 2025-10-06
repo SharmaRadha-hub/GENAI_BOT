@@ -358,26 +358,42 @@ def display_chat_history():
 def sidebar():
     """Render the sidebar with controls and information"""
     with st.sidebar:
-        st.markdown("## 🎛️ Control Panel")
-        st.markdown("---")
+        # Professional Header with Logo Effect
+        st.markdown("""
+        <div style='text-align: center; padding: 1rem 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    border-radius: 10px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);'>
+            <h2 style='color: white; margin: 0; font-size: 1.5rem; font-weight: 800;'>
+                🎛️ Control Panel
+            </h2>
+        </div>
+        """, unsafe_allow_html=True)
         
-        # Initialize/Rebuild buttons
+        # Initialize/Rebuild buttons with enhanced styling
+        st.markdown("<div style='margin: 1.5rem 0;'>", unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("🚀 Initialize", use_container_width=True, help="Load documents and create vector database"):
+            if st.button("🚀 **Initialize**", use_container_width=True, help="Load documents and create vector database", type="primary"):
                 initialize_rag_system(force_rebuild=False)
         
         with col2:
-            if st.button("🔄 Rebuild", use_container_width=True, help="Rebuild database with new documents"):
+            if st.button("🔄 **Rebuild**", use_container_width=True, help="Rebuild database with new documents", type="secondary"):
                 if st.session_state.initialized:
                     initialize_rag_system(force_rebuild=True)
                 else:
                     st.warning("⚠️ Please initialize first!")
+        st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown("---")
         
-        # Document statistics
-        st.markdown("### 📊 Knowledge Base")
+        # Document statistics with enhanced visibility
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); 
+                    padding: 1rem; border-radius: 10px; margin-bottom: 1rem;'>
+            <h3 style='color: #1B5E20; margin: 0 0 0.8rem 0; font-size: 1.2rem; font-weight: 700;'>
+                📊 Knowledge Base
+            </h3>
+        </div>
+        """, unsafe_allow_html=True)
         
         if st.session_state.initialized and st.session_state.rag_manager:
             try:
@@ -388,64 +404,95 @@ def sidebar():
                 stats = processor.get_document_stats()
                 
                 st.markdown(f"""
-                <div class="stats-box">
-                    <div class="stats-title">📚 Database Statistics</div>
-                    <div class="stats-item"><strong>📄 Documents:</strong> {stats['total_files']}</div>
-                    <div class="stats-item"><strong>🧩 Chunks:</strong> {doc_count}</div>
-                    <div class="stats-item"><strong>💾 Size:</strong> {stats['total_size_mb']:.2f} MB</div>
-                    <div class="stats-item"><strong>📁 Types:</strong> {', '.join([f"{k.upper()}({v})" for k, v in stats['by_type'].items()]) if stats['by_type'] else 'None'}</div>
+                <div class="stats-box" style='margin-top: -0.5rem;'>
+                    <div class="stats-item" style='font-size: 1rem; padding: 0.5rem 0;'>
+                        <strong style='color: #000; font-size: 1.05rem;'>📄 Documents:</strong> 
+                        <span style='color: #1B5E20; font-weight: 600;'>{stats['total_files']}</span>
+                    </div>
+                    <div class="stats-item" style='font-size: 1rem; padding: 0.5rem 0;'>
+                        <strong style='color: #000; font-size: 1.05rem;'>🧩 Chunks:</strong> 
+                        <span style='color: #1B5E20; font-weight: 600;'>{doc_count}</span>
+                    </div>
+                    <div class="stats-item" style='font-size: 1rem; padding: 0.5rem 0;'>
+                        <strong style='color: #000; font-size: 1.05rem;'>💾 Size:</strong> 
+                        <span style='color: #1B5E20; font-weight: 600;'>{stats['total_size_mb']:.2f} MB</span>
+                    </div>
+                    <div class="stats-item" style='font-size: 1rem; padding: 0.5rem 0;'>
+                        <strong style='color: #000; font-size: 1.05rem;'>📁 Types:</strong> 
+                        <span style='color: #1B5E20; font-weight: 600;'>{', '.join([f"{k.upper()}({v})" for k, v in stats['by_type'].items()]) if stats['by_type'] else 'None'}</span>
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:
-                st.error(f"❌ Error loading stats")
+                st.error("❌ Error loading stats")
         else:
             st.markdown("""
-            <div class="info-box">
-                <strong>ℹ️ Not Initialized</strong><br>
-                Click 🚀 Initialize to start
+            <div style='background: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 100%); 
+                        padding: 1.2rem; border-radius: 10px; border-left: 5px solid #03A9F4; 
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.08);'>
+                <p style='margin: 0; color: #000; font-weight: 600; font-size: 1rem;'>
+                    <strong>ℹ️ Not Initialized</strong><br>
+                    <span style='color: #1565C0;'>Click 🚀 Initialize to start</span>
+                </p>
             </div>
             """, unsafe_allow_html=True)
         
         st.markdown("---")
         
-        # Settings
-        st.markdown("### ⚙️ Configuration")
-        
-        # Check API key status
-        if config.OPENAI_API_KEY:
-            st.success("✅ OpenAI Connected")
-            st.caption(f"🤖 Model: {config.LLM_MODEL}")
-        else:
-            st.info("💡 Using retrieval-only mode")
-            st.caption("Add API key for AI answers")
-        
-        st.caption(f"🧠 Embeddings: {config.EMBEDDING_MODEL_NAME.split('/')[-1]}")
-        st.caption(f"🔍 Retrieved chunks: {config.TOP_K_RESULTS}")
-        st.caption(f"📏 Chunk size: {config.CHUNK_SIZE} chars")
+        # Settings - HIDDEN/COMMENTED OUT
+        # st.markdown("### ⚙️ Configuration")
+        # 
+        # # Check API key status
+        # if config.OPENAI_API_KEY:
+        #     st.success("✅ OpenAI Connected")
+        #     st.caption(f"🤖 Model: {config.LLM_MODEL}")
+        # else:
+        #     st.info("💡 Using retrieval-only mode")
+        #     st.caption("Add API key for AI answers")
+        # 
+        # st.caption(f"🧠 Embeddings: {config.EMBEDDING_MODEL_NAME.split('/')[-1]}")
+        # st.caption(f"🔍 Retrieved chunks: {config.TOP_K_RESULTS}")
+        # st.caption(f"📏 Chunk size: {config.CHUNK_SIZE} chars")
         
         st.markdown("---")
         
-        # Action buttons
-        if st.button("🗑️ Clear Chat", use_container_width=True, help="Clear conversation history"):
+        # Action buttons with professional styling
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%); 
+                    padding: 0.5rem; border-radius: 8px; margin: 1rem 0;'>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("🗑️ **Clear Chat History**", use_container_width=True, help="Clear conversation history", type="secondary"):
             st.session_state.chat_history = []
             st.rerun()
         
-        # Instructions
+        # Instructions with enhanced visibility
         st.markdown("---")
-        st.markdown("### 📖 Quick Guide")
         st.markdown("""
-        **Getting Started:**
-        1. 📁 Add documents to `documents/` folder
-        2. 🚀 Click Initialize button
-        3. 💬 Ask questions about your docs
-        4. 📚 View sources for references
-        
-        **Supported Files:**
-        - PDF (.pdf)
-        - Text (.txt)
-        - Markdown (.md)
-        - Word (.docx)
-        """)
+        <div style='background: linear-gradient(135deg, #FFF9C4 0%, #FFF59D 100%); 
+                    padding: 1rem; border-radius: 10px; border: 2px solid #F9A825; 
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.1);'>
+            <h3 style='color: #000; margin: 0 0 0.8rem 0; font-size: 1.2rem; font-weight: 700;'>
+                📖 Quick Guide
+            </h3>
+            <div style='color: #000; font-size: 0.95rem; line-height: 1.8;'>
+                <p style='margin: 0.5rem 0; font-weight: 600;'><strong>🚀 Getting Started:</strong></p>
+                <p style='margin: 0.3rem 0; padding-left: 1rem;'>
+                    <strong>1.</strong> 📁 Add documents to <code style='background: #FFE082; padding: 2px 6px; border-radius: 3px; color: #000;'>documents/</code> folder<br>
+                    <strong>2.</strong> 🚀 Click <strong>Initialize</strong> button<br>
+                    <strong>3.</strong> 💬 Ask questions about your docs<br>
+                    <strong>4.</strong> 📚 View sources for references
+                </p>
+                <p style='margin: 0.8rem 0 0.3rem 0; font-weight: 600;'><strong>📄 Supported Files:</strong></p>
+                <p style='margin: 0.3rem 0; padding-left: 1rem;'>
+                    • <strong>PDF</strong> (.pdf) - Reports, papers<br>
+                    • <strong>Text</strong> (.txt) - Notes, data<br>
+                    • <strong>Markdown</strong> (.md) - Documentation<br>
+                    • <strong>Word</strong> (.docx) - Documents
+                </p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 def main():
@@ -466,7 +513,7 @@ def main():
     if not st.session_state.initialized:
         st.markdown("""
         <div class="welcome-box">
-            <h2>👋 Welcome to Your RAG Chatbot!</h2>
+            <h2>👋 Welcome to Your RAG CHATBOT created by RADHA!</h2>
             <p style="font-size: 1.1rem; margin-top: 1rem;">
                 Get started by clicking <strong>🚀 Initialize</strong> in the sidebar
             </p>
@@ -568,7 +615,7 @@ def main():
                 ⚡ Powered by <strong>LangChain</strong> • <strong>ChromaDB</strong> • <strong>Sentence Transformers</strong>
             </p>
             <p style='color: #999; font-size: 0.9rem; margin-top: 0.5rem;'>
-                Built with ❤️ using <strong>Streamlit</strong>
+                Contact <strong>@radha/SharmaRadha-hub</strong>
             </p>
         </div>
     """, unsafe_allow_html=True)
